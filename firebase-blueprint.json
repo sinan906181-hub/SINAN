@@ -1,0 +1,78 @@
+{
+  "entities": {
+    "UserProfile": {
+      "collection": "users",
+      "fields": {
+        "email": { "type": "string", "required": true },
+        "displayName": { "type": "string", "required": false },
+        "photoURL": { "type": "string", "required": false },
+        "role": { "type": "string", "required": true },
+        "plan": { "type": "string", "required": true },
+        "bio": { "type": "string", "required": false },
+        "createdAt": { "type": "string", "required": true },
+        "updatedAt": { "type": "string", "required": false }
+      }
+    },
+    "Project": {
+      "collection": "projects",
+      "fields": {
+        "title": { "type": "string", "required": true },
+        "description": { "type": "string", "required": false },
+        "status": { "type": "string", "required": true },
+        "priority": { "type": "string", "required": true },
+        "tags": { "type": "array", "required": false },
+        "progress": { "type": "number", "required": true },
+        "dueDate": { "type": "string", "required": false },
+        "ownerId": { "type": "string", "required": true },
+        "ownerEmail": { "type": "string", "required": false },
+        "createdAt": { "type": "string", "required": true }
+      }
+    },
+    "Task": {
+      "collection": "tasks",
+      "fields": {
+        "projectId": { "type": "string", "required": true },
+        "title": { "type": "string", "required": true },
+        "completed": { "type": "boolean", "required": true },
+        "priority": { "type": "string", "required": true },
+        "ownerId": { "type": "string", "required": true },
+        "createdAt": { "type": "string", "required": true }
+      }
+    },
+    "Activity": {
+      "collection": "activities",
+      "fields": {
+        "userId": { "type": "string", "required": true },
+        "userName": { "type": "string", "required": true },
+        "action": { "type": "string", "required": true },
+        "target": { "type": "string", "required": true },
+        "type": { "type": "string", "required": true },
+        "createdAt": { "type": "string", "required": true }
+      }
+    },
+    "ChatMessage": {
+      "collection": "chat_messages",
+      "fields": {
+        "userId": { "type": "string", "required": true },
+        "role": { "type": "string", "required": true },
+        "text": { "type": "string", "required": true },
+        "createdAt": { "type": "string", "required": true }
+      }
+    },
+    "ContactInquiry": {
+      "collection": "inquiries",
+      "fields": {
+        "name": { "type": "string", "required": true },
+        "email": { "type": "string", "required": true },
+        "topic": { "type": "string", "required": true },
+        "message": { "type": "string", "required": true },
+        "timestamp": { "type": "string", "required": true },
+        "date": { "type": "string", "required": true },
+        "read": { "type": "boolean", "required": true },
+        "status": { "type": "string", "required": true },
+        "starred": { "type": "boolean", "required": false },
+        "createdAt": { "type": "string", "required": false }
+      }
+    }
+  }
+}

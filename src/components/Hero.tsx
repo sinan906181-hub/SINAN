@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { soundManager } from '../utils/audio';
-import sinanPortraitImage from '../assets/images/regenerated_image_1787223125772.jpg';
+import sinanPortraitImage from '../assets/images/regenerated_image_1789091925380.png';
 
 interface HeroProps {
   onExploreWork: () => void;
@@ -249,12 +249,13 @@ export const Hero: React.FC<HeroProps> = ({ onExploreWork, onConnect }) => {
                 <img
                   src={sinanPortraitImage}
                   alt="Hafiz Muhammed Sinan K"
-                  className="w-full h-full object-cover object-[center_15%] filter contrast-[1.1] brightness-[0.92] transition-transform duration-700 ease-out group-hover:scale-105"
+                  className="w-full h-full object-cover object-center filter contrast-[1.05] brightness-[0.98] transition-transform duration-700 ease-out group-hover:scale-105"
+                  referrerPolicy="no-referrer"
                 />
 
                 {/* Dark Cinematic Vignette Overlays */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#050507] via-transparent to-black/30 opacity-75 group-hover:opacity-50 transition-opacity duration-500" />
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_45%,rgba(5,5,7,0.7)_100%)] pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#050507] via-transparent to-black/30 opacity-60 group-hover:opacity-35 transition-opacity duration-500" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_55%,rgba(5,5,7,0.5)_100%)] pointer-events-none" />
 
                 {/* Light Reflection Sheen (Moves on Hover) */}
                 <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.08] to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none" />

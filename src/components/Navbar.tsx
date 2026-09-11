@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useTheme } from '../context/ThemeContext';
 import { soundManager } from '../utils/audio';
 import { PERSONAL_INFO } from '../data/portfolioData';
+import sinanPortraitImage from '../assets/images/regenerated_image_1789091925380.png';
 
 interface NavbarProps {
   onOpenCommandPalette: () => void;
@@ -104,22 +105,14 @@ export const Navbar: React.FC<NavbarProps> = ({
               id="nav-logo"
               className="flex items-center gap-2.5 group cursor-pointer focus:outline-none"
             >
-              <div className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-black border border-white/20 text-white p-1 shadow-sm group-hover:border-lime-400/60 transition-all">
-                <svg
-                  viewBox="0 0 100 100"
-                  fill="none"
-                  className="w-full h-full text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  aria-label="Sinan Globe Logo"
-                >
-                  <circle cx="50" cy="50" r="44" stroke="currentColor" strokeWidth="7" />
-                  <line x1="6" y1="50" x2="94" y2="50" stroke="currentColor" strokeWidth="7" />
-                  <line x1="12" y1="28" x2="88" y2="28" stroke="currentColor" strokeWidth="7" />
-                  <line x1="12" y1="72" x2="88" y2="72" stroke="currentColor" strokeWidth="7" />
-                  <line x1="50" y1="6" x2="50" y2="94" stroke="currentColor" strokeWidth="7" />
-                  <ellipse cx="50" cy="50" rx="25" ry="44" stroke="currentColor" strokeWidth="7" />
-                </svg>
-                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-lime-400 border-2 border-black" />
+              <div className="relative flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-xl overflow-hidden bg-black border border-white/20 text-white shadow-sm group-hover:border-lime-400/60 transition-all">
+                <img
+                  src={sinanPortraitImage}
+                  alt="Sinan"
+                  className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-300"
+                  referrerPolicy="no-referrer"
+                />
+                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-lime-400 border-2 border-black z-10" />
               </div>
               <span className="font-display font-extrabold text-base sm:text-lg tracking-wider text-slate-100 group-hover:text-lime-400 transition-colors">
                 SINAN

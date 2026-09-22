@@ -14,10 +14,13 @@ import {
   ChevronDown,
   Sparkles,
   Zap,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { AdminTab, NotificationItem } from '../../types/admin';
 import { useTheme } from '../../context/ThemeContext';
 import { soundManager } from '../../utils/audio';
+import { usePhotoVisibility } from '../../utils/usePhotoVisibility';
 
 interface AdminHeaderProps {
   currentTab: AdminTab;
@@ -41,6 +44,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
   onQuickAction,
 }) => {
   const { theme, toggleTheme } = useTheme();
+  const { hidePhoto, toggleHidePhoto } = usePhotoVisibility();
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
   const [showQuickMenu, setShowQuickMenu] = useState(false);
 
@@ -119,6 +123,33 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
 
       {/* Right: Actions, Google Chat, Status, Notifications, Theme */}
       <div className="flex items-center gap-2 sm:gap-3">
+        {/* Photo Privacy Quick Button */}
+        <button
+          onClick={() => {
+            soundManager.playPop();
+            toggleHidePhoto();
+          }}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-medium transition-all cursor-pointer ${
+            hidePhoto
+              ? 'bg-rose-500/10 border-rose-500/30 text-rose-300 hover:bg-rose-500/20'
+              : 'bg-lime-500/10 border-lime-500/30 text-lime-300 hover:bg-lime-500/20'
+          }`}
+          title={
+            hidePhoto
+              ? 'Photo is currently HIDDEN on public portfolio. Click to make visible.'
+              : 'Photo is currently VISIBLE on public portfolio. Click to hide.'
+          }
+        >
+          {hidePhoto ? (
+            <EyeOff className="w-3.5 h-3.5 text-rose-400" />
+          ) : (
+            <Eye className="w-3.5 h-3.5 text-lime-400" />
+          )}
+          <span className="hidden sm:inline">
+            {hidePhoto ? 'Photo: Hidden' : 'Photo: Visible'}
+          </span>
+        </button>
+
         {/* Live Status Pill */}
         <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono-code">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />

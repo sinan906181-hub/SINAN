@@ -15,6 +15,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { useTheme } from '../context/ThemeContext';
 import { soundManager } from '../utils/audio';
+import { usePhotoVisibility } from '../utils/usePhotoVisibility';
 import { PERSONAL_INFO } from '../data/portfolioData';
 import sinanPortraitImage from '../assets/images/regenerated_image_1789091925380.png';
 
@@ -28,6 +29,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenAdmin,
 }) => {
   const { theme, toggleTheme, soundMuted, toggleSound } = useTheme();
+  const { hidePhoto } = usePhotoVisibility();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
@@ -106,12 +108,18 @@ export const Navbar: React.FC<NavbarProps> = ({
               className="flex items-center gap-2.5 group cursor-pointer focus:outline-none"
             >
               <div className="relative flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-xl overflow-hidden bg-black border border-white/20 text-white shadow-sm group-hover:border-lime-400/60 transition-all">
-                <img
-                  src={sinanPortraitImage}
-                  alt="Sinan"
-                  className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-300"
-                  referrerPolicy="no-referrer"
-                />
+                {hidePhoto ? (
+                  <div className="w-full h-full bg-gradient-to-br from-[#a3e635]/25 via-[#0e1320] to-black flex items-center justify-center font-display font-black text-xs text-[#a3e635] tracking-tighter">
+                    SK
+                  </div>
+                ) : (
+                  <img
+                    src={sinanPortraitImage}
+                    alt="Sinan"
+                    className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-300"
+                    referrerPolicy="no-referrer"
+                  />
+                )}
                 <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-lime-400 border-2 border-black z-10" />
               </div>
               <span className="font-display font-extrabold text-base sm:text-lg tracking-wider text-slate-100 group-hover:text-lime-400 transition-colors">

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight, Sparkles, Code2 } from 'lucide-react';
 import { soundManager } from '../utils/audio';
+import { usePhotoVisibility } from '../utils/usePhotoVisibility';
 import sinanPortraitImage from '../assets/images/regenerated_image_1789091925380.png';
 
 interface HeroProps {
@@ -12,6 +13,7 @@ interface HeroProps {
 export const Hero: React.FC<HeroProps> = ({ onExploreWork, onConnect }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const imageCardRef = useRef<HTMLDivElement>(null);
+  const { hidePhoto } = usePhotoVisibility();
 
   // Mouse position coordinates for typography parallax and 3D card tilt
   const mouseX = useMotionValue(0);
@@ -245,16 +247,53 @@ export const Hero: React.FC<HeroProps> = ({ onExploreWork, onConnect }) => {
 
               {/* Card Container */}
               <div className="relative w-full h-full rounded-3xl overflow-hidden bg-[#0a0c10] border border-white/10 shadow-2xl">
-                {/* Profile Portrait Image (Smooth slow zoom on hover) */}
-                <img
-                  src={sinanPortraitImage}
-                  alt="Hafiz Muhammed Sinan K"
-                  className="w-full h-full object-cover object-center filter contrast-[1.05] brightness-[0.98] transition-transform duration-700 ease-out group-hover:scale-105"
-                  referrerPolicy="no-referrer"
-                />
+                {hidePhoto ? (
+                  <div className="relative w-full h-full flex flex-col items-center justify-center p-6 bg-gradient-to-b from-[#0e1320] via-[#090c14] to-[#040508] overflow-hidden">
+                    {/* Subtle blueprint grid pattern background */}
+                    <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff06_1px,transparent_1px),linear-gradient(to_bottom,#ffffff06_1px,transparent_1px)] bg-[size:22px_22px] pointer-events-none" />
+
+                    {/* Ambient radial lighting glow */}
+                    <div className="absolute w-52 h-52 rounded-full bg-[#a3e635]/10 blur-3xl animate-pulse pointer-events-none" />
+                    <div className="absolute bottom-0 right-0 w-44 h-44 rounded-full bg-sky-500/10 blur-3xl pointer-events-none" />
+
+                    {/* High-Tech Creative Monogram Badge */}
+                    <div className="relative z-10 flex flex-col items-center text-center space-y-4">
+                      <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-gradient-to-tr from-[#121826] to-[#0a0d14] border-2 border-[#a3e635]/40 shadow-2xl shadow-[#a3e635]/20 flex items-center justify-center group-hover:border-[#a3e635] transition-all">
+                        <span className="font-display font-black text-4xl sm:text-5xl tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-200 to-[#a3e635]">
+                          SK
+                        </span>
+                        <div className="absolute -top-1.5 -right-1.5 p-1 rounded-full bg-[#a3e635] text-slate-950 shadow-md shadow-[#a3e635]/40">
+                          <Code2 className="w-3.5 h-3.5" />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <h4 className="font-display font-extrabold text-sm sm:text-base text-white tracking-widest uppercase">
+                          Hafiz Muhammed Sinan
+                        </h4>
+                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#a3e635]/10 border border-[#a3e635]/30 text-[10px] font-mono-code text-[#a3e635]">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#a3e635] animate-ping" />
+                          <span>ANONYMOUS CREATIVE MODE</span>
+                        </div>
+                      </div>
+
+                      <p className="text-[11px] text-slate-400 font-mono-code max-w-[210px] leading-relaxed">
+                        // ARCHITECTING NEXT-GEN INTERFACES & AUTOMATION
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  /* Profile Portrait Image (Smooth slow zoom on hover) */
+                  <img
+                    src={sinanPortraitImage}
+                    alt="Hafiz Muhammed Sinan K"
+                    className="w-full h-full object-cover object-center filter contrast-[1.05] brightness-[0.98] transition-transform duration-700 ease-out group-hover:scale-105"
+                    referrerPolicy="no-referrer"
+                  />
+                )}
 
                 {/* Dark Cinematic Vignette Overlays */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#050507] via-transparent to-black/30 opacity-60 group-hover:opacity-35 transition-opacity duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#050507] via-transparent to-black/30 opacity-60 group-hover:opacity-35 transition-opacity duration-500 pointer-events-none" />
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_55%,rgba(5,5,7,0.5)_100%)] pointer-events-none" />
 
                 {/* Light Reflection Sheen (Moves on Hover) */}

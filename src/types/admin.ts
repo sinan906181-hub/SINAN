@@ -2,6 +2,7 @@ export type AdminTab = 'dashboard' | 'messages' | 'overview' | 'activity' | 'not
 
 export interface ContactInquiry {
   id: string;
+  firestoreDocId?: string;
   name: string;
   email: string;
   topic: string;

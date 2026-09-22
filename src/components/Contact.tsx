@@ -89,10 +89,11 @@ export const Contact: React.FC = () => {
     try {
       // 1. Send to Firestore database
       try {
-        await addDoc(collection(db, 'inquiries'), {
+        const docRef = await addDoc(collection(db, 'inquiries'), {
           ...newInquiry,
           createdAt: serverTimestamp(),
         });
+        newInquiry.firestoreDocId = docRef.id;
       } catch (firestoreErr) {
         console.warn('Firestore write warning (saving locally as fallback):', firestoreErr);
       }

@@ -37,19 +37,16 @@ function PortfolioApp() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Keyboard shortcuts: Ctrl+Shift+/ or Cmd+Shift+/ or Ctrl+Shift+A opens Admin Portal; Cmd+K opens Command Palette
+  // Keyboard shortcuts: Ctrl+Shift+] (or Cmd+Shift+]) opens Admin Portal; Cmd+K opens Command Palette
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const isModifier = e.ctrlKey || e.metaKey;
       const isShift = e.shiftKey;
-      const isSlash = e.key === '/' || e.key === '?' || e.code === 'Slash' || e.keyCode === 191;
+      const isBracketRight =
+        e.code === 'BracketRight' || e.key === ']' || e.key === '}';
 
-      // Open Admin Portal with Ctrl+Shift+/ or Cmd+Shift+/ or Ctrl+Shift+A
-      if (
-        (isModifier && isShift && isSlash) ||
-        (isModifier && isSlash) ||
-        (isModifier && isShift && (e.key.toLowerCase() === 'a' || e.code === 'KeyA'))
-      ) {
+      // Admin Portal Secret Trigger: Ctrl + Shift + ] (or Ctrl + ])
+      if (isModifier && isBracketRight) {
         e.preventDefault();
         soundManager.playPop();
         setIsAdminPortalOpen((prev) => !prev);
@@ -57,7 +54,9 @@ function PortfolioApp() {
       }
 
       // Open Command Palette with Cmd+K or Ctrl+K
-      const isTargetInput = (e.target as HTMLElement)?.tagName === 'INPUT' || (e.target as HTMLElement)?.tagName === 'TEXTAREA';
+      const isTargetInput =
+        (e.target as HTMLElement)?.tagName === 'INPUT' ||
+        (e.target as HTMLElement)?.tagName === 'TEXTAREA';
       if (!isTargetInput && isModifier && (e.key.toLowerCase() === 'k' || e.code === 'KeyK')) {
         e.preventDefault();
         soundManager.playPop();

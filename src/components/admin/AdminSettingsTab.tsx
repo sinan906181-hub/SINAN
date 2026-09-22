@@ -10,14 +10,19 @@ import {
   Lock,
   ExternalLink,
   Sparkles,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { soundManager } from '../../utils/audio';
+import { usePhotoVisibility } from '../../utils/usePhotoVisibility';
+import sinanPortraitImage from '../../assets/images/regenerated_image_1789091925380.png';
 
 interface AdminSettingsTabProps {
   onSaveSettings: () => void;
 }
 
 export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ onSaveSettings }) => {
+  const { hidePhoto, toggleHidePhoto } = usePhotoVisibility();
   const [appName, setAppName] = useState('Sinan Platform OS');
   const [googleChatWebhook, setGoogleChatWebhook] = useState(
     'https://chat.googleapis.com/v1/spaces/SPACE_ID/messages'
@@ -36,6 +41,102 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ onSaveSettin
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8 select-none max-w-4xl">
+      {/* Profile Photo Visibility & Privacy Control */}
+      <div className="p-6 rounded-3xl bg-[#0c101a]/80 border border-white/10 shadow-xl space-y-5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div
+              className={`p-2.5 rounded-xl border ${
+                hidePhoto
+                  ? 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+                  : 'bg-lime-400/10 text-lime-400 border-lime-400/20'
+              }`}
+            >
+              {hidePhoto ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-display font-bold text-base text-white">
+                  Profile Photo Visibility (ഫോട്ടോ പ്രൈവസി)
+                </h3>
+                <span
+                  className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono-code font-bold uppercase ${
+                    hidePhoto
+                      ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                      : 'bg-lime-400/20 text-lime-300 border border-lime-400/30'
+                  }`}
+                >
+                  {hidePhoto ? 'Hidden // Anonymous Mode' : 'Visible // Photo Active'}
+                </span>
+              </div>
+              <p className="text-xs text-slate-400">
+                Control whether your personal portrait is displayed on the public portfolio or replaced by your signature monogram branding.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="relative w-14 h-14 rounded-2xl overflow-hidden border border-white/15 bg-black shrink-0">
+              {hidePhoto ? (
+                <div className="w-full h-full bg-gradient-to-br from-[#a3e635]/20 via-[#0e1320] to-black flex items-center justify-center font-display font-black text-sm text-[#a3e635]">
+                  SK
+                </div>
+              ) : (
+                <img
+                  src={sinanPortraitImage}
+                  alt="Sinan Preview"
+                  className="w-full h-full object-cover"
+                />
+              )}
+              <span
+                className={`absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-[#0c101a] ${
+                  hidePhoto ? 'bg-rose-500' : 'bg-lime-400'
+                }`}
+              />
+            </div>
+            <div>
+              <span className="text-xs font-bold text-white block">
+                {hidePhoto
+                  ? 'Photo is currently HIDDEN from public visitors'
+                  : 'Photo is currently VISIBLE to public visitors'}
+              </span>
+              <span className="text-[11px] text-slate-400">
+                {hidePhoto
+                  ? 'Visitors in Hero and Navbar see your high-tech "SK" creative developer emblem.'
+                  : 'Visitors in Hero and Navbar see your portrait photo.'}
+              </span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              soundManager.playPop();
+              toggleHidePhoto();
+            }}
+            className={`px-4 py-2 rounded-xl text-xs font-bold font-display flex items-center gap-2 transition-all cursor-pointer shrink-0 ${
+              hidePhoto
+                ? 'bg-lime-400 hover:bg-lime-300 text-slate-950 shadow-md shadow-lime-400/20'
+                : 'bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30'
+            }`}
+          >
+            {hidePhoto ? (
+              <>
+                <Eye className="w-4 h-4" />
+                <span>Show My Photo</span>
+              </>
+            ) : (
+              <>
+                <EyeOff className="w-4 h-4" />
+                <span>Hide My Photo</span>
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+
       {/* General SaaS Settings */}
       <div className="p-6 rounded-3xl bg-[#0c101a]/80 border border-white/10 shadow-xl space-y-5">
         <div className="flex items-center gap-3">

@@ -16,6 +16,8 @@ import {
   Globe,
   Radio,
   ExternalLink,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import {
   AreaChart,
@@ -36,6 +38,7 @@ import {
 } from '../../data/adminData';
 import { ActivityLog, ContactInquiry } from '../../types/admin';
 import { soundManager } from '../../utils/audio';
+import { usePhotoVisibility } from '../../utils/usePhotoVisibility';
 
 interface AdminDashboardTabProps {
   recentLogs: ActivityLog[];
@@ -50,6 +53,7 @@ export const AdminDashboardTab: React.FC<AdminDashboardTabProps> = ({
   onNavigateTab,
   inquiries = [],
 }) => {
+  const { hidePhoto, toggleHidePhoto } = usePhotoVisibility();
   const unreadInquiries = inquiries.filter((i) => !i.read && i.status !== 'archived');
   const getIcon = (name: string) => {
     switch (name) {
@@ -319,6 +323,51 @@ export const AdminDashboardTab: React.FC<AdminDashboardTabProps> = ({
           </div>
 
           <div className="grid grid-cols-2 gap-2.5">
+            {/* Quick Profile Photo Privacy Switch */}
+            <button
+              onClick={() => {
+                soundManager.playPop();
+                toggleHidePhoto();
+              }}
+              className={`col-span-2 p-3.5 rounded-2xl border text-left transition-all group flex items-center justify-between cursor-pointer ${
+                hidePhoto
+                  ? 'bg-rose-500/10 hover:bg-rose-500/15 border-rose-500/30'
+                  : 'bg-lime-500/10 hover:bg-lime-500/15 border-lime-500/30'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className={`p-2 rounded-xl ${
+                    hidePhoto ? 'bg-rose-500/20 text-rose-400' : 'bg-lime-500/20 text-lime-400'
+                  }`}
+                >
+                  {hidePhoto ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-white flex items-center gap-2">
+                    <span>Profile Photo: {hidePhoto ? 'Hidden' : 'Visible'}</span>
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[9px] font-mono-code font-bold ${
+                        hidePhoto
+                          ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                          : 'bg-lime-500/20 text-lime-300 border border-lime-500/30'
+                      }`}
+                    >
+                      {hidePhoto ? 'ANONYMOUS MODE' : 'PUBLIC ACTIVE'}
+                    </span>
+                  </div>
+                  <div className="text-[10px] text-slate-400">
+                    {hidePhoto
+                      ? 'Click to show your portrait on public portfolio'
+                      : 'Click to hide your portrait on public portfolio'}
+                  </div>
+                </div>
+              </div>
+              <span className="text-xs font-bold font-mono-code px-3 py-1.5 rounded-xl bg-white/10 text-white group-hover:bg-white/20 transition-colors">
+                {hidePhoto ? 'Show Photo' : 'Hide Photo'}
+              </span>
+            </button>
+
             <button
               onClick={() => {
                 soundManager.playPop();

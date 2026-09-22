@@ -19,7 +19,16 @@ import { AdminToast } from './AdminToast';
 import { AdminConfirmDialog } from './AdminConfirmDialog';
 import { soundManager } from '../../utils/audio';
 import { db } from '../../firebase';
-import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
+import {
+  collection,
+  onSnapshot,
+  query,
+  limit,
+  doc,
+  deleteDoc,
+  where,
+  getDocs,
+} from 'firebase/firestore';
 
 interface AdminPortalProps {
   onBackToPortfolio: () => void;
@@ -50,7 +59,10 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToPortfolio }) =
 
   const [inquiries, setInquiries] = useState<ContactInquiry[]>(() => {
     const saved = localStorage.getItem('sinan_admin_inquiries');
-    return saved ? JSON.parse(saved) : INITIAL_CONTACT_INQUIRIES;
+    const parsed: ContactInquiry[] = saved ? JSON.parse(saved) : INITIAL_CONTACT_INQUIRIES;
+    const deleted = localStorage.getItem('sinan_deleted_inquiry_ids');
+    const deletedIds: string[] = deleted ? JSON.parse(deleted) : [];
+    return parsed.filter((i) => !deletedIds.includes(i.id) && (!i.firestoreDocId || !deletedIds.includes(i.firestoreDocId)));
   });
 
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
@@ -82,29 +94,43 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToPortfolio }) =
         q,
         (snapshot) => {
           if (!snapshot.empty) {
-            const remoteInquiries: ContactInquiry[] = snapshot.docs.map((docSnap) => {
-              const data = docSnap.data();
-              return {
-                id: data.id || docSnap.id,
-                name: data.name || 'Anonymous Client',
-                email: data.email || 'no-email@provided.com',
-                topic: data.topic || 'General Inquiry',
-                message: data.message || '',
-                timestamp: data.timestamp || 'Recent',
-                date: data.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-                read: data.read ?? false,
-                status: data.status || 'new',
-                starred: data.starred ?? false,
-                phone: data.phone,
-              };
-            });
+            const deletedRaw = localStorage.getItem('sinan_deleted_inquiry_ids');
+            const deletedIds: string[] = deletedRaw ? JSON.parse(deletedRaw) : [];
+
+            const remoteInquiries: ContactInquiry[] = snapshot.docs
+              .map((docSnap) => {
+                const data = docSnap.data();
+                const docId = docSnap.id;
+                const inqId = data.id || docId;
+                return {
+                  id: inqId,
+                  firestoreDocId: docId,
+                  name: data.name || 'Anonymous Client',
+                  email: data.email || 'no-email@provided.com',
+                  topic: data.topic || 'General Inquiry',
+                  message: data.message || '',
+                  timestamp: data.timestamp || 'Recent',
+                  date: data.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                  read: data.read ?? false,
+                  status: data.status || 'new',
+                  starred: data.starred ?? false,
+                  phone: data.phone,
+                };
+              })
+              .filter(
+                (inq) =>
+                  !deletedIds.includes(inq.id) &&
+                  (!inq.firestoreDocId || !deletedIds.includes(inq.firestoreDocId))
+              );
 
             setInquiries((prev) => {
               // Merge remote and local without duplicate IDs
               const map = new Map<string, ContactInquiry>();
-              // Put existing first
-              prev.forEach((item) => map.set(item.id, item));
-              // Overlay / add remote
+              prev.forEach((item) => {
+                if (!deletedIds.includes(item.id) && (!item.firestoreDocId || !deletedIds.includes(item.firestoreDocId))) {
+                  map.set(item.id, item);
+                }
+              });
               remoteInquiries.forEach((item) => {
                 if (!map.has(item.id)) {
                   map.set(item.id, item);
@@ -222,8 +248,48 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToPortfolio }) =
     addToast('Inquiry Status Updated', 'Message moved to archive.', 'info');
   };
 
+  const handleDeleteInquiryDirect = async (id: string, firestoreDocId?: string, silent = false) => {
+    soundManager.playPop();
+
+    // 1. Record ID in deleted list to prevent resurrection on refresh or Firestore listener
+    const deletedRaw = localStorage.getItem('sinan_deleted_inquiry_ids');
+    const prevDeleted: string[] = deletedRaw ? JSON.parse(deletedRaw) : [];
+    const newDeleted = Array.from(new Set([...prevDeleted, id, firestoreDocId].filter(Boolean) as string[]));
+    localStorage.setItem('sinan_deleted_inquiry_ids', JSON.stringify(newDeleted));
+
+    // 2. Remove from local state and storage
+    setInquiries((prev) => {
+      const filtered = prev.filter((inq) => inq.id !== id && inq.firestoreDocId !== firestoreDocId);
+      localStorage.setItem('sinan_admin_inquiries', JSON.stringify(filtered));
+      return filtered;
+    });
+
+    // 3. Delete from Firestore permanently
+    try {
+      if (firestoreDocId) {
+        await deleteDoc(doc(db, 'inquiries', firestoreDocId));
+      }
+      const q = query(collection(db, 'inquiries'), where('id', '==', id));
+      const snaps = await getDocs(q);
+      snaps.forEach(async (d) => {
+        await deleteDoc(d.ref);
+      });
+      // Also attempt direct doc delete if id was the document id
+      try {
+        await deleteDoc(doc(db, 'inquiries', id));
+      } catch (_) {}
+    } catch (err) {
+      console.warn('Firestore message deletion notice:', err);
+    }
+
+    if (!silent) {
+      addToast('Message Deleted', 'Contact submission permanently removed.', 'info');
+    }
+  };
+
   const handleDeleteInquiry = (id: string) => {
     soundManager.playPop();
+    const inq = inquiries.find((i) => i.id === id);
     setDialogConfig({
       isOpen: true,
       title: 'Delete Message',
@@ -231,7 +297,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToPortfolio }) =
       confirmLabel: 'Delete',
       variant: 'danger',
       onConfirm: () => {
-        setInquiries((prev) => prev.filter((inq) => inq.id !== id));
+        handleDeleteInquiryDirect(id, inq?.firestoreDocId, true);
         setDialogConfig((d) => ({ ...d, isOpen: false }));
         addToast('Message Deleted', 'Contact submission permanently removed.', 'info');
       },
@@ -421,7 +487,9 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onBackToPortfolio }) =
               onToggleStar={handleToggleStarInquiry}
               onArchive={handleArchiveInquiry}
               onDelete={handleDeleteInquiry}
+              onDeleteDirect={handleDeleteInquiryDirect}
               onForwardToChat={handleForwardInquiryToChat}
+              onToast={addToast}
             />
           )}
 
